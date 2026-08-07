@@ -20,7 +20,9 @@ function formatTimestamp(timestamp: number): string {
 export default function PosicaoGpsScreen() {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [address, setAddress] = useState<string | null>(null);
+  // Guarda o objeto completo devolvido pelo geocoder, para exibir cada campo separado
+  const [address, setAddress] = useState<Location.LocationGeocodedAddress | null>(null);
+  const [addressError, setAddressError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   // Converte as coordenadas em um endereço legível
@@ -32,22 +34,23 @@ export default function PosicaoGpsScreen() {
       });
 
       if (response.length > 0) {
-        const item = response[0];
-        // Monta o endereço (ex: Av. da caverna do dragao, 6767 - São Paulo, SP)
-        const formatado = `${item.street || ''}, ${item.streetNumber || ''} - ${item.subregion || ''}, ${item.city || ''} - ${item.region || ''}`;
-        setAddress(formatado);
+        setAddress(response[0]);
+        setAddressError(null);
       } else {
-        setAddress("Endereço não encontrado");
+        setAddress(null);
+        setAddressError("Endereço não encontrado");
       }
     } catch (error) {
       console.error(error);
-      setAddress("Erro ao converter endereço");
+      setAddress(null);
+      setAddressError("Erro ao converter endereço");
     }
   }
 
   const getCurrentLocation = useCallback(async () => {
     setLoading(true);
     setErrorMsg(null);
+    setAddressError(null);
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -131,11 +134,57 @@ export default function PosicaoGpsScreen() {
           </View>
         </View>
 
-        <View style={[styles.card, styles.addressCard]}>
-          <Text style={styles.addressLabel}>Endereço aproximado</Text>
-          <Text style={styles.addressValue}>
-            {address ?? "Convertendo endereço..."}
-          </Text>
+        <View style={styles.card}>
+          <View style={styles.statusRow}>
+            <View style={styles.statusDot} />
+            <Text style={styles.statusText}>Endereço</Text>
+          </View>
+
+          <View style={styles.divider} />
+
+          {renderEndereco(address, addressError)}
+        </View>
+      </>
+    );
+  }
+
+  function renderEndereco(
+    address: Location.LocationGeocodedAddress | null,
+    addressError: string | null
+  ) {
+    if (addressError) {
+      return <Text style={styles.errorText}>{addressError}</Text>;
+    }
+
+    if (!address) {
+      return <Text style={styles.loadingText}>Convertendo endereço...</Text>;
+    }
+
+    return (
+      <>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Rua</Text>
+          <Text style={styles.infoValue}>{address.street || "Indisponível"}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Número (aproximado)</Text>
+          <Text style={styles.infoValue}>{address.streetNumber || "Indisponível"}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Bairro</Text>
+          <Text style={styles.infoValue}>{address.district || address.subregion || "Indisponível"}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>CEP</Text>
+          <Text style={styles.infoValue}>{address.postalCode || "Indisponível"}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Cidade</Text>
+          <Text style={styles.infoValue}>{address.city || "Indisponível"}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Estado</Text>
+          <Text style={styles.infoValue}>{address.region || "Indisponível"}</Text>
         </View>
       </>
     );
@@ -280,27 +329,6 @@ const styles = StyleSheet.create({
     color: "#B12727",
     fontSize: 15,
     textAlign: "center",
-  },
-
-  // Variação do card para o endereço geocodificado (tom verde-claro informativo)
-  addressCard: {
-    backgroundColor: "#F1F6F2",
-    borderColor: "#D6E6D9",
-  },
-
-  // Rótulo acima do endereço
-  addressLabel: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: "#25883E",
-    marginBottom: 6,
-  },
-
-  // Texto do endereço formatado
-  addressValue: {
-    fontSize: 15,
-    color: "#4C5B50",
-    lineHeight: 21,
   },
 
   // Botão de atualizar localização — destaque em verde sólido
