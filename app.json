@@ -25,6 +25,16 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permitir que o app acesse a câmera para controlar a lanterna do dispositivo.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ]
+    ]
   }
 }
