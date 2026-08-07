@@ -26,6 +26,11 @@ const menuItems: Array<{
     title: "Lanterna",
     description: "Acenda ou apague a lanterna tocando na tela ou balançando o aparelho.",
     route: "LanternaScreen",
+  },
+  {
+    title: "Acelerômetro",
+    description: "Verifique os valores do acelerômetro em tempo real.",
+    route: "AcelerometroScreen",
   }
 ];
 
@@ -125,7 +130,6 @@ const styles = StyleSheet.create({
     borderColor: "#E4E8E5", // Cinza-claro para a borda — sutil, não chama atenção
   },
 
-  // Área de texto dentro do card: ocupa todo o espaço disponível (exceto a seta)
   cardText: {
     flex: 1, // flex: 1 faz este elemento crescer e ocupar o espaço restante na linha
   },

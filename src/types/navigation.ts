@@ -3,4 +3,5 @@ export type RootStackParamList = {
   PosicaoGpsScreen: undefined;
   LanternaScreen: undefined;
   RedesWifiScreen: undefined;
+  AcelerometroScreen: undefined;
 }

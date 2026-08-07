@@ -6,6 +6,8 @@ import HomeScreen from './src/screens/Home';
 import PosicaoGpsScreen from './src/screens/PosicaoGPS';
 import LanternaScreen from './src/screens/Lanterna';
 import RedesWifiScreen from './src/screens/RedesWifi';
+import AcelerometroScreen from './src/screens/acelerometro';
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
@@ -16,6 +18,7 @@ export default function App() {
         <Stack.Screen name="PosicaoGpsScreen" component={PosicaoGpsScreen} options={{ title: 'Posição Atual do GPS' }} />
         <Stack.Screen name="LanternaScreen" component={LanternaScreen} options={{ title: 'Lanterna' }} />
         <Stack.Screen name="RedesWifiScreen" component={RedesWifiScreen} options={{ title: 'Informações de Rede' }} />
+        <Stack.Screen name="AcelerometroScreen" component={AcelerometroScreen} options={{ title: 'Acelerômetro' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

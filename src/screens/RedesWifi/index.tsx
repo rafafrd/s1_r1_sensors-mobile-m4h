@@ -151,18 +151,24 @@ export default function RedesWifiScreen() {
           </View>
         )}
 
-        <TouchableOpacity
-          style={[styles.refreshButton, loading && styles.refreshButtonDisabled]}
-          onPress={carregarRede}
-          disabled={loading}
-          activeOpacity={0.85}
-        >
-          {loading ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
-          ) : (
-            <Text style={styles.refreshText}>Atualizar</Text>
-          )}
-        </TouchableOpacity>
+          {/* Card informativo sobre limitações do Expo Go para varredura de redes */}
+            <View style={[styles.card, styles.noteCard]}>
+                <Text style={styles.noteTitle}>Sobre as redes disponíveis</Text>
+                <Text style={styles.noteText}>
+                    A varredura de outras redes Wi-Fi próximas e a leitura do nome (SSID)
+                    não são permitidas no Expo Go. Esses recursos exigem um módulo nativo
+                    e um development build. Aqui mostramos as informações da conexão ativa
+                    que o Expo disponibiliza com segurança.
+                </Text>
+            </View>
+            <TouchableOpacity
+            style={styles.refreshButton}
+            onPress={carregarRede}
+            disabled={loading}             // Desabilita o botão quando já está carregado
+            activeOpacity={0.85}
+            >
+              <Text style={styles.refreshText}>{loading ? "Atualizando..." : "Atualizar"}</Text>
+            </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
