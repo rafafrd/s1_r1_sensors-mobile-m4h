@@ -19,6 +19,7 @@ Aplicativo mobile educacional que explora os sensores e APIs nativas do disposit
 ## Índice
 
 - [Sobre o projeto](#sobre-o-projeto)
+- [Documentação de arquitetura](#documentação-de-arquitetura)
 - [Funcionalidades](#funcionalidades)
 - [Arquitetura de navegação](#arquitetura-de-navegação)
 - [Fluxo — Posição GPS](#fluxo--posição-gps)
@@ -34,6 +35,10 @@ Aplicativo mobile educacional que explora os sensores e APIs nativas do disposit
 ## Sobre o projeto
 
 Este é o **Roteiro 1 (Sensores)** da disciplina de Desenvolvimento Mobile — um app único com quatro telas, cada uma explorando uma API nativa diferente através do Expo, com uma tela inicial de navegação (`HomeScreen`) que dá acesso a todas elas.
+
+## Documentação de arquitetura
+
+Este README cobre a visão geral e o "como rodar". Para detalhes de arquitetura — camadas do app, padrões de estado repetidos entre telas, navegação tipada e permissões por plataforma — veja **[`docs/`](./docs/README.md)**.
 
 ## Funcionalidades
 
