@@ -1,7 +1,9 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Location from "expo-location";
+import { ThemeColors } from "../../theme/colors";
+import { useTheme } from "../../theme/ThemeContext";
 
 // ─── Helpers de formatação ──────────────────────────────────────────────────
 function formatCoord(value: number): string {
@@ -24,6 +26,9 @@ export default function PosicaoGpsScreen() {
   const [address, setAddress] = useState<Location.LocationGeocodedAddress | null>(null);
   const [addressError, setAddressError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   // Converte as coordenadas em um endereço legível
   async function reverseGeocode(latitude: number, longitude: number) {
@@ -82,7 +87,7 @@ export default function PosicaoGpsScreen() {
     if (loading && !location) {
       return (
         <View style={styles.loadingBox}>
-          <ActivityIndicator size="large" color="#25883E" />
+          <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.loadingText}>Obtendo localização...</Text>
         </View>
       );
@@ -214,141 +219,143 @@ export default function PosicaoGpsScreen() {
 }
 
 // ─── Estilos ──────────────────────────────────────────────────────────────────
-const styles = StyleSheet.create({
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
 
-  // Tela principal: ocupa toda a área e define o fundo cinza-claro padrão do app
-  screen: {
-    flex: 1,
-    backgroundColor: "#F6F7F8",
-  },
+    // Tela principal: ocupa toda a área e define o fundo do tema atual
+    screen: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
 
-  // Container do ScrollView: espaçamento interno e gap entre os cards
-  content: {
-    padding: 20,
-    gap: 16,
-  },
+    // Container do ScrollView: espaçamento interno e gap entre os cards
+    content: {
+      padding: 20,
+      gap: 16,
+    },
 
-  // Título principal da tela
-  title: {
-    fontSize: 26,
-    fontWeight: "700",
-    color: "#18211B",
-  },
+    // Título principal da tela
+    title: {
+      fontSize: 26,
+      fontWeight: "700",
+      color: colors.textPrimary,
+    },
 
-  // Subtítulo descritivo abaixo do título
-  subtitle: {
-    fontSize: 15,
-    color: "#66706A",
-    lineHeight: 22,
-    marginTop: -8,
-  },
+    // Subtítulo descritivo abaixo do título
+    subtitle: {
+      fontSize: 15,
+      color: colors.textSecondary,
+      lineHeight: 22,
+      marginTop: -8,
+    },
 
-  // Container do spinner de carregamento
-  loadingBox: {
-    alignItems: "center",
-    paddingVertical: 48,
-    gap: 12,
-  },
+    // Container do spinner de carregamento
+    loadingBox: {
+      alignItems: "center",
+      paddingVertical: 48,
+      gap: 12,
+    },
 
-  // Texto abaixo do spinner
-  loadingText: {
-    color: "#66706A",
-    fontSize: 15,
-  },
+    // Texto abaixo do spinner
+    loadingText: {
+      color: colors.textSecondary,
+      fontSize: 15,
+    },
 
-  // Card branco com borda — container reutilizado em múltiplos contextos
-  card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 14,
-    padding: 18,
-    borderWidth: 1,
-    borderColor: "#E4E8E5",
-  },
+    // Card com borda — container reutilizado em múltiplos contextos
+    card: {
+      backgroundColor: colors.card,
+      borderRadius: 14,
+      padding: 18,
+      borderWidth: 1,
+      borderColor: colors.cardBorder,
+    },
 
-  // Linha do indicador de status (ponto colorido + texto "Coordenadas")
-  statusRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
+    // Linha do indicador de status (ponto colorido + texto "Coordenadas")
+    statusRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+    },
 
-  // Ponto circular verde que indica sinal de GPS ativo
-  statusDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: "#25883E",
-  },
+    // Ponto circular que indica sinal de GPS ativo
+    statusDot: {
+      width: 12,
+      height: 12,
+      borderRadius: 6,
+      backgroundColor: colors.primary,
+    },
 
-  // Texto "Coordenadas"
-  statusText: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#18211B",
-  },
+    // Texto "Coordenadas"
+    statusText: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: colors.textPrimary,
+    },
 
-  // Linha separadora horizontal entre o status e os detalhes
-  divider: {
-    height: 1,
-    backgroundColor: "#EEF1EF",
-    marginVertical: 14,
-  },
+    // Linha separadora horizontal entre o status e os detalhes
+    divider: {
+      height: 1,
+      backgroundColor: colors.divider,
+      marginVertical: 14,
+    },
 
-  // Container de cada linha de detalhe (rótulo + valor)
-  infoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 8,
-    gap: 12,
-  },
+    // Container de cada linha de detalhe (rótulo + valor)
+    infoRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 8,
+      gap: 12,
+    },
 
-  // Rótulo da esquerda (ex.: "Latitude", "Altitude")
-  infoLabel: {
-    fontSize: 14,
-    color: "#66706A",
-  },
+    // Rótulo da esquerda (ex.: "Latitude", "Altitude")
+    infoLabel: {
+      fontSize: 14,
+      color: colors.textSecondary,
+    },
 
-  // Valor da direita (ex.: "-23.550520")
-  infoValue: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#18211B",
-    flexShrink: 1,
-    textAlign: "right",
-  },
+    // Valor da direita (ex.: "-23.550520")
+    infoValue: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: colors.textPrimary,
+      flexShrink: 1,
+      textAlign: "right",
+    },
 
-  // Variação do card para estado de erro (fundo e borda avermelhados)
-  errorCard: {
-    borderColor: "#F0C9C9",
-    backgroundColor: "#FCF2F2",
-  },
+    // Variação do card para estado de erro
+    errorCard: {
+      borderColor: colors.errorBorder,
+      backgroundColor: colors.errorBg,
+    },
 
-  // Texto de erro exibido dentro do errorCard
-  errorText: {
-    color: "#B12727",
-    fontSize: 15,
-    textAlign: "center",
-  },
+    // Texto de erro exibido dentro do errorCard
+    errorText: {
+      color: colors.error,
+      fontSize: 15,
+      textAlign: "center",
+    },
 
-  // Botão de atualizar localização — destaque em verde sólido
-  refreshButton: {
-    height: 52,
-    borderRadius: 12,
-    backgroundColor: "#25883E",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+    // Botão de atualizar localização — destaque na cor de marca
+    refreshButton: {
+      height: 52,
+      borderRadius: 12,
+      backgroundColor: colors.primary,
+      alignItems: "center",
+      justifyContent: "center",
+    },
 
-  // Variação do botão de atualizar enquanto uma busca está em andamento
-  refreshButtonDisabled: {
-    opacity: 0.6,
-  },
+    // Variação do botão de atualizar enquanto uma busca está em andamento
+    refreshButtonDisabled: {
+      opacity: 0.6,
+    },
 
-  // Texto do botão de atualizar
-  refreshText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "700",
-  },
-});
+    // Texto do botão de atualizar
+    refreshText: {
+      color: colors.onPrimary,
+      fontSize: 16,
+      fontWeight: "700",
+    },
+  });
+}

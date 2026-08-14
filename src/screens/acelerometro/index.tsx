@@ -10,7 +10,7 @@
 //   - Zerar: reseta os valores exibidos para zero (sem parar a captura)
 // ─────────────────────────────────────────────────────────────────────────────
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -18,6 +18,8 @@ import {
   View,
 } from "react-native";
 import { Accelerometer, AccelerometerMeasurement } from "expo-sensors";
+import { ThemeColors } from "../../theme/colors";
+import { useTheme } from "../../theme/ThemeContext";
 
 // Valor padrão inicial de todos os eixos: zeros.
 // Também usado ao zerar os valores manualmente.
@@ -36,6 +38,9 @@ export default function AcelerometroScreen() {
   //   true  → disponível
   //   false → não disponível neste dispositivo
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
+
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   // useRef armazena a assinatura do listener sem causar re-renders ao mudar.
   // É essencial para poder remover o listener (pausar) sem perder a referência.
@@ -124,9 +129,9 @@ export default function AcelerometroScreen() {
           {/* Cards lado a lado para os eixos X, Y e Z */}
           <View style={styles.axes}>
             {/* Cada AxisCard recebe o nome do eixo, seu valor atual e a cor de destaque */}
-            <AxisCard axis="X" value={data.x} color="#B12727" />
-            <AxisCard axis="Y" value={data.y} color="#25883E" />
-            <AxisCard axis="Z" value={data.z} color="#376FA3" />
+            <AxisCard axis="X" value={data.x} color={colors.axisX} textColor={colors.onPrimary} styles={styles} />
+            <AxisCard axis="Y" value={data.y} color={colors.axisY} textColor={colors.onPrimary} styles={styles} />
+            <AxisCard axis="Z" value={data.z} color={colors.axisZ} textColor={colors.onPrimary} styles={styles} />
           </View>
 
           {/* Card da magnitude total — combina os três eixos em um único valor */}
@@ -144,8 +149,8 @@ export default function AcelerometroScreen() {
             <View
               style={[
                 styles.statusDot,
-                // Cor dinâmica: verde se capturando, cinza se pausado
-                { backgroundColor: isRunning ? "#25883E" : "#66706A" },
+                // Cor dinâmica: cor de marca se capturando, cinza se pausado
+                { backgroundColor: isRunning ? colors.primary : colors.statusMuted },
               ]}
             />
             <Text style={styles.statusText}>
@@ -153,7 +158,7 @@ export default function AcelerometroScreen() {
             </Text>
           </View>
 
-          {/* Botões de controle: Iniciar (verde) e Pausar (contorno verde) */}
+          {/* Botões de controle: Iniciar (preenchido) e Pausar (contorno) */}
           <View style={styles.controls}>
 
             {/* Botão Iniciar: desabilitado se já estiver rodando ou sem sensor */}
@@ -212,15 +217,28 @@ export default function AcelerometroScreen() {
 
 // ─── Componente auxiliar AxisCard ─────────────────────────────────────────────
 // Exibe o valor de aceleração de um único eixo com badge colorido e unidade.
-// Recebe: axis (letra), value (número), color (cor do badge).
-function AxisCard({ axis, value, color }: Readonly<{ axis: string; value: number; color: string }>) {
+// Recebe: axis (letra), value (número), color (cor do badge), textColor (cor da letra
+// dentro do badge) e os estilos já resolvidos para o tema atual.
+function AxisCard({
+  axis,
+  value,
+  color,
+  textColor,
+  styles,
+}: Readonly<{
+  axis: string;
+  value: number;
+  color: string;
+  textColor: string;
+  styles: ReturnType<typeof createStyles>;
+}>) {
   return (
     // accessibilityLabel torna o card legível por leitores de tela
     <View style={styles.axisCard} accessibilityLabel={`Eixo ${axis}: ${value.toFixed(3)} g`}>
 
       {/* Badge colorido com a letra do eixo (X, Y ou Z) */}
       <View style={[styles.axisBadge, { backgroundColor: color }]}>
-        <Text style={styles.axisLetter}>{axis}</Text>
+        <Text style={[styles.axisLetter, { color: textColor }]}>{axis}</Text>
       </View>
 
       {/* Valor numérico com 3 casas decimais */}
@@ -233,234 +251,236 @@ function AxisCard({ axis, value, color }: Readonly<{ axis: string; value: number
 }
 
 // ─── Estilos ──────────────────────────────────────────────────────────────────
-const styles = StyleSheet.create({
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
 
-  // Tela principal: fundo cinza-claro e padding uniforme
-  screen: {
-    flex: 1,               // Ocupa toda a área disponível
-    backgroundColor: "#F6F7F8", // Cinza-claro padrão do app
-    padding: 20,           // Espaçamento interno em todos os lados
-  },
+    // Tela principal: fundo do tema atual e padding uniforme
+    screen: {
+      flex: 1,               // Ocupa toda a área disponível
+      backgroundColor: colors.background,
+      padding: 20,           // Espaçamento interno em todos os lados
+    },
 
-  // Bloco de cabeçalho
-  heading: {
-    marginBottom: 24, // Separa o cabeçalho dos cards de eixo abaixo
-  },
+    // Bloco de cabeçalho
+    heading: {
+      marginBottom: 24, // Separa o cabeçalho dos cards de eixo abaixo
+    },
 
-  // Título principal da tela
-  title: {
-    fontSize: 26,      // Grande para ser o destaque visual
-    fontWeight: "700", // Negrito
-    color: "#18211B",  // Verde-escuro quase preto
-  },
+    // Título principal da tela
+    title: {
+      fontSize: 26,      // Grande para ser o destaque visual
+      fontWeight: "700", // Negrito
+      color: colors.textPrimary,
+    },
 
-  // Subtítulo explicativo
-  subtitle: {
-    fontSize: 15,
-    color: "#66706A",  // Cinza-esverdeado — texto secundário
-    lineHeight: 22,    // Altura de linha para boa legibilidade
-    marginTop: 8,      // Pequeno espaço entre título e subtítulo
-  },
+    // Subtítulo explicativo
+    subtitle: {
+      fontSize: 15,
+      color: colors.textSecondary,
+      lineHeight: 22,    // Altura de linha para boa legibilidade
+      marginTop: 8,      // Pequeno espaço entre título e subtítulo
+    },
 
-  // Container dos três cards de eixo lado a lado
-  axes: {
-    flexDirection: "row", // Coloca X, Y e Z horizontalmente
-    gap: 10,              // Espaço de 10px entre cada card de eixo
-  },
+    // Container dos três cards de eixo lado a lado
+    axes: {
+      flexDirection: "row", // Coloca X, Y e Z horizontalmente
+      gap: 10,              // Espaço de 10px entre cada card de eixo
+    },
 
-  // Card individual de cada eixo (X, Y ou Z)
-  axisCard: {
-    flex: 1,                 // flex: 1 divide o espaço igualmente entre os 3 cards
-    backgroundColor: "#FFFFFF",
-    borderRadius: 14,
-    paddingVertical: 18,     // Padding vertical interno — sem horizontal, pois o conteúdo é centralizado
-    alignItems: "center",    // Centraliza o badge, valor e unidade horizontalmente
-    borderWidth: 1,
-    borderColor: "#E4E8E5",
-  },
+    // Card individual de cada eixo (X, Y ou Z)
+    axisCard: {
+      flex: 1,                 // flex: 1 divide o espaço igualmente entre os 3 cards
+      backgroundColor: colors.card,
+      borderRadius: 14,
+      paddingVertical: 18,     // Padding vertical interno — sem horizontal, pois o conteúdo é centralizado
+      alignItems: "center",    // Centraliza o badge, valor e unidade horizontalmente
+      borderWidth: 1,
+      borderColor: colors.cardBorder,
+    },
 
-  // Badge circular colorido com a letra do eixo
-  axisBadge: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,         // Metade de 34px = círculo perfeito
-    alignItems: "center",     // Centraliza a letra horizontalmente
-    justifyContent: "center", // Centraliza a letra verticalmente
-    marginBottom: 12,         // Espaço entre o badge e o valor numérico abaixo
-    // backgroundColor aplicado dinamicamente (cor do eixo)
-  },
+    // Badge circular colorido com a letra do eixo
+    axisBadge: {
+      width: 34,
+      height: 34,
+      borderRadius: 17,         // Metade de 34px = círculo perfeito
+      alignItems: "center",     // Centraliza a letra horizontalmente
+      justifyContent: "center", // Centraliza a letra verticalmente
+      marginBottom: 12,         // Espaço entre o badge e o valor numérico abaixo
+      // backgroundColor aplicado dinamicamente (cor do eixo)
+    },
 
-  // Letra dentro do badge (X, Y ou Z)
-  axisLetter: {
-    color: "#FFFFFF",  // Branco — contrasta com o fundo colorido do badge
-    fontSize: 16,
-    fontWeight: "700", // Negrito
-  },
+    // Letra dentro do badge (X, Y ou Z)
+    axisLetter: {
+      fontSize: 16,
+      fontWeight: "700", // Negrito
+      // color aplicado dinamicamente (contraste com o fundo do badge)
+    },
 
-  // Valor numérico do eixo (ex.: "0.982")
-  axisValue: {
-    color: "#18211B",
-    fontSize: 20,      // Grande para facilitar a leitura em tempo real
-    fontWeight: "700",
-  },
+    // Valor numérico do eixo (ex.: "0.982")
+    axisValue: {
+      color: colors.textPrimary,
+      fontSize: 20,      // Grande para facilitar a leitura em tempo real
+      fontWeight: "700",
+    },
 
-  // Unidade de medida "g" abaixo do valor
-  axisUnit: {
-    color: "#66706A",  // Cinza — texto de suporte, menos destaque
-    fontSize: 13,
-    marginTop: 2,      // Pequeno espaço acima da unidade
-  },
+    // Unidade de medida "g" abaixo do valor
+    axisUnit: {
+      color: colors.textSecondary,
+      fontSize: 13,
+      marginTop: 2,      // Pequeno espaço acima da unidade
+    },
 
-  // Card da magnitude total (linha horizontal com rótulo e valor)
-  magnitudeCard: {
-    flexDirection: "row",        // Rótulo à esquerda, valor à direita
-    justifyContent: "space-between", // Empurra os elementos para as extremidades
-    alignItems: "center",        // Alinha verticalmente ao centro
-    backgroundColor: "#FFFFFF",
-    borderRadius: 14,
-    padding: 18,
-    borderWidth: 1,
-    borderColor: "#E4E8E5",
-    marginTop: 12,               // Espaço acima, separando dos cards de eixo
-    gap: 12,                     // Espaço mínimo entre rótulo e valor
-  },
+    // Card da magnitude total (linha horizontal com rótulo e valor)
+    magnitudeCard: {
+      flexDirection: "row",        // Rótulo à esquerda, valor à direita
+      justifyContent: "space-between", // Empurra os elementos para as extremidades
+      alignItems: "center",        // Alinha verticalmente ao centro
+      backgroundColor: colors.card,
+      borderRadius: 14,
+      padding: 18,
+      borderWidth: 1,
+      borderColor: colors.cardBorder,
+      marginTop: 12,               // Espaço acima, separando dos cards de eixo
+      gap: 12,                     // Espaço mínimo entre rótulo e valor
+    },
 
-  // Rótulo "Magnitude total"
-  magnitudeLabel: {
-    color: "#18211B",
-    fontSize: 16,
-    fontWeight: "700",
-  },
+    // Rótulo "Magnitude total"
+    magnitudeLabel: {
+      color: colors.textPrimary,
+      fontSize: 16,
+      fontWeight: "700",
+    },
 
-  // Texto auxiliar "Combinação dos três eixos"
-  magnitudeHint: {
-    color: "#66706A",
-    fontSize: 12,      // Pequeno — informação de suporte
-    marginTop: 3,      // Pequeno espaço acima
-  },
+    // Texto auxiliar "Combinação dos três eixos"
+    magnitudeHint: {
+      color: colors.textSecondary,
+      fontSize: 12,      // Pequeno — informação de suporte
+      marginTop: 3,      // Pequeno espaço acima
+    },
 
-  // Valor numérico da magnitude (ex.: "1.024 g")
-  magnitudeValue: {
-    color: "#25883E",  // Verde — destaca o valor principal
-    fontSize: 21,
-    fontWeight: "700",
-  },
+    // Valor numérico da magnitude (ex.: "1.024 g")
+    magnitudeValue: {
+      color: colors.primary,
+      fontSize: 21,
+      fontWeight: "700",
+    },
 
-  // Linha do indicador de status (ponto + texto)
-  statusRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,            // Espaço entre o ponto e o texto
-    marginTop: 20,     // Espaço acima, separando do card de magnitude
-  },
+    // Linha do indicador de status (ponto + texto)
+    statusRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,            // Espaço entre o ponto e o texto
+      marginTop: 20,     // Espaço acima, separando do card de magnitude
+    },
 
-  // Ponto circular de status
-  statusDot: {
-    width: 9,
-    height: 9,
-    borderRadius: 5,   // Metade ≈ círculo (4.5px arredondado para 5)
-    // backgroundColor aplicado dinamicamente (verde ou cinza)
-  },
+    // Ponto circular de status
+    statusDot: {
+      width: 9,
+      height: 9,
+      borderRadius: 5,   // Metade ≈ círculo (4.5px arredondado para 5)
+      // backgroundColor aplicado dinamicamente (cor de marca ou cinza)
+    },
 
-  // Texto de status ("Captura em andamento" / "Captura pausada")
-  statusText: {
-    color: "#66706A",
-    fontSize: 14,
-  },
+    // Texto de status ("Captura em andamento" / "Captura pausada")
+    statusText: {
+      color: colors.textSecondary,
+      fontSize: 14,
+    },
 
-  // Linha com os botões Iniciar e Pausar lado a lado
-  controls: {
-    flexDirection: "row", // Botões lado a lado
-    gap: 12,              // Espaço entre os botões
-    marginTop: 14,        // Espaço acima dos botões
-  },
+    // Linha com os botões Iniciar e Pausar lado a lado
+    controls: {
+      flexDirection: "row", // Botões lado a lado
+      gap: 12,              // Espaço entre os botões
+      marginTop: 14,        // Espaço acima dos botões
+    },
 
-  // Estilo base compartilhado pelos dois botões de controle
-  button: {
-    flex: 1,              // Cada botão ocupa metade do espaço disponível
-    height: 50,           // Altura fixa — confortável para toque
-    borderRadius: 12,     // Cantos arredondados
-    alignItems: "center", // Centraliza o texto horizontalmente
-    justifyContent: "center", // Centraliza o texto verticalmente
-  },
+    // Estilo base compartilhado pelos dois botões de controle
+    button: {
+      flex: 1,              // Cada botão ocupa metade do espaço disponível
+      height: 50,           // Altura fixa — confortável para toque
+      borderRadius: 12,     // Cantos arredondados
+      alignItems: "center", // Centraliza o texto horizontalmente
+      justifyContent: "center", // Centraliza o texto verticalmente
+    },
 
-  // Botão primário: fundo verde sólido (Iniciar)
-  primaryButton: {
-    backgroundColor: "#25883E", // Verde principal — ação de destaque
-  },
+    // Botão primário: fundo sólido na cor de marca (Iniciar)
+    primaryButton: {
+      backgroundColor: colors.primary,
+    },
 
-  // Texto do botão primário
-  primaryButtonText: {
-    color: "#FFFFFF",    // Branco — contrasta com o fundo verde
-    fontSize: 16,
-    fontWeight: "700",
-  },
+    // Texto do botão primário
+    primaryButtonText: {
+      color: colors.onPrimary,
+      fontSize: 16,
+      fontWeight: "700",
+    },
 
-  // Botão secundário: contorno verde sem fundo (Pausar)
-  secondaryButton: {
-    backgroundColor: "#FFFFFF", // Fundo branco
-    borderWidth: 1,             // Borda para delimitar o botão
-    borderColor: "#25883E",     // Borda verde — mesmo verde do botão primário
-  },
+    // Botão secundário: contorno na cor de marca, sem preenchimento (Pausar)
+    secondaryButton: {
+      backgroundColor: colors.card,
+      borderWidth: 1,             // Borda para delimitar o botão
+      borderColor: colors.primary,
+    },
 
-  // Texto do botão secundário
-  secondaryButtonText: {
-    color: "#25883E",  // Verde — combina com a borda
-    fontSize: 16,
-    fontWeight: "700",
-  },
+    // Texto do botão secundário
+    secondaryButtonText: {
+      color: colors.primary,
+      fontSize: 16,
+      fontWeight: "700",
+    },
 
-  // Estilo de botão desabilitado — reduz opacidade para indicar inatividade
-  disabledButton: {
-    opacity: 0.45, // 45% de opacidade — visualmente "apagado" mas ainda visível
-  },
+    // Estilo de botão desabilitado — reduz opacidade para indicar inatividade
+    disabledButton: {
+      opacity: 0.45, // 45% de opacidade — visualmente "apagado" mas ainda visível
+    },
 
-  // Botão de zerar — sem fundo, apenas área clicável
-  resetButton: {
-    height: 46,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 10,     // Espaço acima, separando dos botões principais
-  },
+    // Botão de zerar — sem fundo, apenas área clicável
+    resetButton: {
+      height: 46,
+      borderRadius: 12,
+      alignItems: "center",
+      justifyContent: "center",
+      marginTop: 10,     // Espaço acima, separando dos botões principais
+    },
 
-  // Texto do botão de zerar — estilo discreto
-  resetButtonText: {
-    color: "#66706A",  // Cinza — ação secundária, menos destaque
-    fontSize: 15,
-    fontWeight: "600", // Semi-negrito
-  },
+    // Texto do botão de zerar — estilo discreto
+    resetButtonText: {
+      color: colors.textSecondary,
+      fontSize: 15,
+      fontWeight: "600", // Semi-negrito
+    },
 
-  // Texto de dica de uso no final da tela
-  helpText: {
-    color: "#66706A",
-    fontSize: 13,       // Pequeno — texto informativo de baixo destaque
-    lineHeight: 19,     // Altura de linha para boa leitura
-    textAlign: "center", // Centraliza o texto
-    marginTop: 18,      // Espaço acima, separando do botão de zerar
-  },
+    // Texto de dica de uso no final da tela
+    helpText: {
+      color: colors.textSecondary,
+      fontSize: 13,       // Pequeno — texto informativo de baixo destaque
+      lineHeight: 19,     // Altura de linha para boa leitura
+      textAlign: "center", // Centraliza o texto
+      marginTop: 18,      // Espaço acima, separando do botão de zerar
+    },
 
-  // Card de aviso: sensor não disponível
-  warningCard: {
-    backgroundColor: "#FCF2F2", // Fundo levemente rosado — tom de alerta
-    borderWidth: 1,
-    borderColor: "#F0C9C9",     // Borda rosa — reforça o tom de alerta
-    borderRadius: 14,
-    padding: 18,
-  },
+    // Card de aviso: sensor não disponível
+    warningCard: {
+      backgroundColor: colors.errorBg,
+      borderWidth: 1,
+      borderColor: colors.errorBorder,
+      borderRadius: 14,
+      padding: 18,
+    },
 
-  // Título do aviso
-  warningTitle: {
-    color: "#B12727",  // Vermelho — indica problema/alerta
-    fontSize: 16,
-    fontWeight: "700",
-  },
+    // Título do aviso
+    warningTitle: {
+      color: colors.error,
+      fontSize: 16,
+      fontWeight: "700",
+    },
 
-  // Corpo do texto do aviso
-  warningText: {
-    color: "#7A4545",  // Marrom-avermelhado escuro — harmônico com o fundo rosado
-    fontSize: 14,
-    lineHeight: 21,
-    marginTop: 6,      // Espaço entre o título e o texto do aviso
-  },
-});
+    // Corpo do texto do aviso
+    warningText: {
+      color: colors.errorMutedText,
+      fontSize: 14,
+      lineHeight: 21,
+      marginTop: 6,      // Espaço entre o título e o texto do aviso
+    },
+  });
+}

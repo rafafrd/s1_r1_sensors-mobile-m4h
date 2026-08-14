@@ -1,8 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { Accelerometer } from "expo-sensors";
+import { ThemeColors } from "../../theme/colors";
+import { useTheme } from "../../theme/ThemeContext";
 
 // Sensibilidade do gesto de "balançar" e tempo mínimo entre disparos
 const LIMIAR_BALANCO = 1.7;
@@ -12,6 +14,9 @@ export default function LanternaScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [ligada, setLigada] = useState(false);
   const [modalPagamentoVisivel, setModalPagamentoVisivel] = useState(false);
+
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   // Ref espelhando o estado "ligada" para ser lido dentro do listener do acelerômetro
   // sem precisar recriar a assinatura a cada toggle
@@ -146,163 +151,165 @@ export default function LanternaScreen() {
 }
 
 // ─── Estilos ──────────────────────────────────────────────────────────────────
-const styles = StyleSheet.create({
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
 
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#F6F7F8",
-  },
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
 
-  container: {
-    flex: 1,
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 48,
-  },
+    container: {
+      flex: 1,
+      alignItems: "center",
+      paddingHorizontal: 20,
+      paddingTop: 48,
+    },
 
-  titleScreen: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#18211B",
-  },
+    titleScreen: {
+      fontSize: 24,
+      fontWeight: "700",
+      color: colors.textPrimary,
+    },
 
-  paragraph: {
-    fontSize: 15,
-    textAlign: "center",
-    color: "#66706A",
-    lineHeight: 21,
-    marginTop: 10,
-  },
+    paragraph: {
+      fontSize: 15,
+      textAlign: "center",
+      color: colors.textSecondary,
+      lineHeight: 21,
+      marginTop: 10,
+    },
 
-  // A CameraView fica com tamanho mínimo e invisível — só existe para acionar a tocha
-  cameraOculta: {
-    position: "absolute",
-    width: 1,
-    height: 1,
-    opacity: 0,
-  },
+    // A CameraView fica com tamanho mínimo e invisível — só existe para acionar a tocha
+    cameraOculta: {
+      position: "absolute",
+      width: 1,
+      height: 1,
+      opacity: 0,
+    },
 
-  avisoPermissao: {
-    marginTop: 24,
-    padding: 16,
-    borderRadius: 14,
-    backgroundColor: "#FBEAEA",
-    borderWidth: 1,
-    borderColor: "#F2C4C4",
-    alignItems: "center",
-  },
+    avisoPermissao: {
+      marginTop: 24,
+      padding: 16,
+      borderRadius: 14,
+      backgroundColor: colors.errorBg,
+      borderWidth: 1,
+      borderColor: colors.errorBorder,
+      alignItems: "center",
+    },
 
-  avisoTexto: {
-    fontSize: 14,
-    color: "#b12727",
-    textAlign: "center",
-    marginBottom: 12,
-  },
+    avisoTexto: {
+      fontSize: 14,
+      color: colors.error,
+      textAlign: "center",
+      marginBottom: 12,
+    },
 
-  botaoPermissao: {
-    backgroundColor: "#25883E",
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    borderRadius: 10,
-  },
+    botaoPermissao: {
+      backgroundColor: colors.primary,
+      paddingVertical: 10,
+      paddingHorizontal: 18,
+      borderRadius: 10,
+    },
 
-  botaoPermissaoTexto: {
-    color: "#FFFFFF",
-    fontWeight: "700",
-  },
+    botaoPermissaoTexto: {
+      color: colors.onPrimary,
+      fontWeight: "700",
+    },
 
-  botaoLanterna: {
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    marginTop: 48,
-    marginBottom: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#FFFFFF",
-    borderWidth: 2,
-    borderColor: "#E4E8E5",
-  },
+    botaoLanterna: {
+      width: 180,
+      height: 180,
+      borderRadius: 90,
+      marginTop: 48,
+      marginBottom: 20,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.card,
+      borderWidth: 2,
+      borderColor: colors.cardBorder,
+    },
 
-  botaoLanternaAcesa: {
-    backgroundColor: "#FFF6D8",
-    borderColor: "#F2C94C",
-  },
+    botaoLanternaAcesa: {
+      backgroundColor: colors.torchOnBg,
+      borderColor: colors.torchOnBorder,
+    },
 
-  iconeLanterna: {
-    fontSize: 84,
-  },
+    iconeLanterna: {
+      fontSize: 84,
+    },
 
-  status: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#66706A",
-  },
+    status: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: colors.textSecondary,
+    },
 
-  statusAcesa: {
-    color: "#25883E",
-  },
+    statusAcesa: {
+      color: colors.primary,
+    },
 
-  modalFundo: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.55)",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-  },
+    modalFundo: {
+      flex: 1,
+      backgroundColor: colors.overlay,
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 24,
+    },
 
-  modalCard: {
-    width: "100%",
-    maxWidth: 340,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 18,
-    padding: 24,
-    alignItems: "center",
-  },
+    modalCard: {
+      width: "100%",
+      maxWidth: 340,
+      backgroundColor: colors.card,
+      borderRadius: 18,
+      padding: 24,
+      alignItems: "center",
+    },
 
-  modalTitulo: {
-    fontSize: 19,
-    fontWeight: "700",
-    color: "#18211B",
-    textAlign: "center",
-    marginBottom: 10,
-  },
+    modalTitulo: {
+      fontSize: 19,
+      fontWeight: "700",
+      color: colors.textPrimary,
+      textAlign: "center",
+      marginBottom: 10,
+    },
 
-  modalTexto: {
-    fontSize: 15,
-    color: "#66706A",
-    textAlign: "center",
-    lineHeight: 21,
-    marginBottom: 22,
-  },
+    modalTexto: {
+      fontSize: 15,
+      color: colors.textSecondary,
+      textAlign: "center",
+      lineHeight: 21,
+      marginBottom: 22,
+    },
 
-  modalPreco: {
-    fontWeight: "700",
-    color: "#25883E",
-  },
+    modalPreco: {
+      fontWeight: "700",
+      color: colors.primary,
+    },
 
-  modalBotaoPrimario: {
-    width: "100%",
-    backgroundColor: "#25883E",
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-    marginBottom: 10,
-  },
+    modalBotaoPrimario: {
+      width: "100%",
+      backgroundColor: colors.primary,
+      borderRadius: 12,
+      paddingVertical: 14,
+      alignItems: "center",
+      marginBottom: 10,
+    },
 
-  modalBotaoPrimarioTexto: {
-    color: "#FFFFFF",
-    fontWeight: "700",
-    fontSize: 15,
-  },
+    modalBotaoPrimarioTexto: {
+      color: colors.onPrimary,
+      fontWeight: "700",
+      fontSize: 15,
+    },
 
-  modalBotaoSecundario: {
-    paddingVertical: 8,
-    alignItems: "center",
-  },
+    modalBotaoSecundario: {
+      paddingVertical: 8,
+      alignItems: "center",
+    },
 
-  modalBotaoSecundarioTexto: {
-    color: "#66706A",
-    fontSize: 14,
-  },
-});
+    modalBotaoSecundarioTexto: {
+      color: colors.textSecondary,
+      fontSize: 14,
+    },
+  });
+}
