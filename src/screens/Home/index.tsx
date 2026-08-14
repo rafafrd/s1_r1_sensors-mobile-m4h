@@ -1,16 +1,21 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../types/navigation";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'HomeScreen'>;
+type HomeRouteProp = RouteProp<RootStackParamList, 'HomeScreen'>;
+
+// A Home só navega para as telas de sensor — nunca para si mesma ou para o login,
+// então o tipo da rota do menu exclui essas duas (ambas exigem params diferentes).
+type SensorRoute = Exclude<keyof RootStackParamList, 'LoginScreen' | 'HomeScreen'>;
 
 const menuItems: Array<{
   title: string;
   description: string;
-  route: keyof RootStackParamList;
+  route: SensorRoute;
 }> = [
   {
     title: 'Posição Atual do GPS',
@@ -36,12 +41,15 @@ const menuItems: Array<{
 
 export default function HomeScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const { params } = useRoute<HomeRouteProp>();
+  const userName = params.userName;
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.heading}>
-          <Text style={styles.eyebrow}>BEM-VINDO</Text>
-          <Text style={styles.title}>Sensores</Text>
+          <Text style={styles.eyebrow}>SENSORES</Text>
+          <Text style={styles.title}>Bem-vindo, {userName}!</Text>
           <Text style={styles.subtitle}>
             Escolha uma opção abaixo para começar a explorar os sensores do dispositivo.
           </Text>

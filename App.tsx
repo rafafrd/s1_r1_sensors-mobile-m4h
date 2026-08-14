@@ -2,6 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './src/types/navigation';
 
+import LoginScreen from './src/screens/Login';
 import HomeScreen from './src/screens/Home';
 import PosicaoGpsScreen from './src/screens/PosicaoGPS';
 import LanternaScreen from './src/screens/Lanterna';
@@ -13,7 +14,8 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator initialRouteName="LoginScreen">
+        <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
         <Stack.Screen name="PosicaoGpsScreen" component={PosicaoGpsScreen} options={{ title: 'Posição Atual do GPS' }} />
         <Stack.Screen name="LanternaScreen" component={LanternaScreen} options={{ title: 'Lanterna' }} />
