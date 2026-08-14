@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -12,6 +12,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../types/navigation";
+import { ThemeColors } from "../../theme/colors";
+import { useTheme } from "../../theme/ThemeContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "LoginScreen">;
 
@@ -19,6 +21,9 @@ export default function LoginScreen() {
   const navigation = useNavigation<NavigationProp>();
   const [nome, setNome] = useState("");
   const [erro, setErro] = useState<string | null>(null);
+
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   function handleEntrar() {
     // Verificação: sem isso, um nome vazio (ou só espaços) navegaria pra Home
@@ -52,7 +57,7 @@ export default function LoginScreen() {
           <TextInput
             style={[styles.input, erro && styles.inputErro]}
             placeholder="Seu nome"
-            placeholderTextColor="#9AA39D"
+            placeholderTextColor={colors.textPlaceholder}
             value={nome}
             onChangeText={(texto) => {
               setNome(texto);
@@ -81,81 +86,83 @@ export default function LoginScreen() {
 }
 
 // ─── Estilos ──────────────────────────────────────────────────────────────────
-const styles = StyleSheet.create({
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
 
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#F6F7F8",
-  },
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
 
-  flex: {
-    flex: 1,
-  },
+    flex: {
+      flex: 1,
+    },
 
-  container: {
-    flex: 1,
-    justifyContent: "center", // Centraliza o formulário verticalmente na tela
-    paddingHorizontal: 24,
-  },
+    container: {
+      flex: 1,
+      justifyContent: "center", // Centraliza o formulário verticalmente na tela
+      paddingHorizontal: 24,
+    },
 
-  eyebrow: {
-    color: "#25883E",
-    fontSize: 12,
-    fontWeight: "700",
-    letterSpacing: 1.2,
-  },
+    eyebrow: {
+      color: colors.primary,
+      fontSize: 12,
+      fontWeight: "700",
+      letterSpacing: 1.2,
+    },
 
-  title: {
-    color: "#18211B",
-    fontSize: 28,
-    fontWeight: "700",
-    marginTop: 8,
-  },
+    title: {
+      color: colors.textPrimary,
+      fontSize: 28,
+      fontWeight: "700",
+      marginTop: 8,
+    },
 
-  subtitle: {
-    color: "#66706A",
-    fontSize: 15,
-    lineHeight: 21,
-    marginTop: 8,
-    marginBottom: 28,
-  },
+    subtitle: {
+      color: colors.textSecondary,
+      fontSize: 15,
+      lineHeight: 21,
+      marginTop: 8,
+      marginBottom: 28,
+    },
 
-  // Campo de texto para o nome
-  input: {
-    height: 54,
-    borderRadius: 12,
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#E4E8E5",
-    paddingHorizontal: 16,
-    fontSize: 16,
-    color: "#18211B",
-  },
+    // Campo de texto para o nome
+    input: {
+      height: 54,
+      borderRadius: 12,
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.cardBorder,
+      paddingHorizontal: 16,
+      fontSize: 16,
+      color: colors.textPrimary,
+    },
 
-  // Borda vermelha quando a validação falha
-  inputErro: {
-    borderColor: "#F0C9C9",
-    backgroundColor: "#FCF2F2",
-  },
+    // Borda vermelha quando a validação falha
+    inputErro: {
+      borderColor: colors.errorBorder,
+      backgroundColor: colors.errorBg,
+    },
 
-  erroTexto: {
-    color: "#B12727",
-    fontSize: 13,
-    marginTop: 8,
-  },
+    erroTexto: {
+      color: colors.error,
+      fontSize: 13,
+      marginTop: 8,
+    },
 
-  botao: {
-    height: 52,
-    borderRadius: 12,
-    backgroundColor: "#25883E",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
-  },
+    botao: {
+      height: 52,
+      borderRadius: 12,
+      backgroundColor: colors.primary,
+      alignItems: "center",
+      justifyContent: "center",
+      marginTop: 20,
+    },
 
-  botaoTexto: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "700",
-  },
-});
+    botaoTexto: {
+      color: colors.onPrimary,
+      fontSize: 16,
+      fontWeight: "700",
+    },
+  });
+}
