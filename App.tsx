@@ -32,6 +32,7 @@ function AppNavigator() {
       >
         <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="CameraScreen" component={CameraScreen} options={{ title: 'Câmera' }} />
         <Stack.Screen name="PosicaoGpsScreen" component={PosicaoGpsScreen} options={{ title: 'Posição Atual do GPS' }} />
         <Stack.Screen name="LanternaScreen" component={LanternaScreen} options={{ title: 'Lanterna' }} />
         <Stack.Screen name="RedesWifiScreen" component={RedesWifiScreen} options={{ title: 'Informações de Rede' }} />
