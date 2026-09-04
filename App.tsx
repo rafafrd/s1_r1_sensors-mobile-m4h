@@ -11,6 +11,7 @@ import PosicaoGpsScreen from './src/screens/PosicaoGPS';
 import LanternaScreen from './src/screens/Lanterna';
 import RedesWifiScreen from './src/screens/RedesWifi';
 import AcelerometroScreen from './src/screens/acelerometro';
+import CameraScreen from './src/screens/Camera';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

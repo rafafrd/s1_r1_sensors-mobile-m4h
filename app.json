@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "s1-r1-sensores-1",
-    "slug": "s1-r1-sensores-1",
+    "slug": "rafafrd",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,7 +21,17 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_MEDIA_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -30,11 +40,25 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Permitir que o app acesse a câmera para controlar a lanterna do dispositivo.",
-          "microphonePermission": false,
-          "recordAudioAndroid": false
+          "cameraPermission": "Permitir que o app acesse a câmera para tirar fotos e gravar vídeos.",
+          "microphonePermission": "Permitir que o app acesse o microfone para gravar áudio nos vídeos.",
+          "recordAudioAndroid": true
         }
-      ]
-    ]
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Permitir que o app acesse suas fotos.",
+          "savePhotosPermission": "Permitir que o app salve fotos e vídeos na sua galeria."
+        }
+      ],
+      "expo-status-bar"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "1eab2697-67b4-4366-bbe2-6a642894fc4c"
+      }
+    },
+    "owner": "rafafrds-team"
   }
 }
