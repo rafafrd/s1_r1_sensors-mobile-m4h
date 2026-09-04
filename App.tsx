@@ -11,6 +11,7 @@ import PosicaoGpsScreen from './src/screens/PosicaoGPS';
 import LanternaScreen from './src/screens/Lanterna';
 import RedesWifiScreen from './src/screens/RedesWifi';
 import AcelerometroScreen from './src/screens/acelerometro';
+import CameraScreen from './src/screens/Camera';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -32,6 +33,7 @@ function AppNavigator() {
       >
         <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="CameraScreen" component={CameraScreen} options={{ title: 'Câmera' }} />
         <Stack.Screen name="PosicaoGpsScreen" component={PosicaoGpsScreen} options={{ title: 'Posição Atual do GPS' }} />
         <Stack.Screen name="LanternaScreen" component={LanternaScreen} options={{ title: 'Lanterna' }} />
         <Stack.Screen name="RedesWifiScreen" component={RedesWifiScreen} options={{ title: 'Informações de Rede' }} />

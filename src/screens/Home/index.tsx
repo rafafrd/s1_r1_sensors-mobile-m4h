@@ -38,7 +38,12 @@ const menuItems: Array<{
     title: "Acelerômetro",
     description: "Verifique os valores do acelerômetro em tempo real.",
     route: "AcelerometroScreen",
-  }
+  },
+  {
+    title: "Câmera",
+    description: "Acesse a câmera do dispositivo para tirar fotos ou gravar vídeos.",
+    route: "CameraScreen",
+  },
 ];
 
 export default function HomeScreen() {

@@ -6,4 +6,5 @@ export type RootStackParamList = {
   LanternaScreen: undefined;
   RedesWifiScreen: undefined;
   AcelerometroScreen: undefined;
+  CameraScreen: undefined;
 }
